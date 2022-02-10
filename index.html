@@ -12,13 +12,95 @@
     <script src="./js/react-dom.development.js"></script>
   </head>
   <style>
-#loginPage {
-  display: flex;
-  background-color: pink;
+:root {
+
 }
 
-#introPage {
-  background-color: blue;
+
+:root {
+  --color-canvas-subtle: #f6f8fa;
+  --color-border-muted: #d8dee4;
+  --logo-green: #7fbe42;
+  --stone-blue: #68829f;
+}
+
+* {
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+  line-height: 1.5;
+  font-size: 24px;
+  font-weight: 400;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.signInBox {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+  width: 340px;
+  height: 100%;
+  color: var(--color-border-muted);
+}
+
+.signInBox > img {
+  height: 150px;
+  width: auto;
+}
+
+.formBox {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-around;
+  align-items: stretch;
+  width: 340px;
+  height: 270px;
+  padding: 20px;
+  font-size: 14px;
+  border-radius: 6px;
+  background-color: var(--color-canvas-subtle);
+  border: 1px solid var(--color-border-muted);
+  box-shadow: 0 0 3px #233e5c;
+}
+.formBox > * {
+  border-radius: 6px;
+  font-size: 20px;
+  color: black;
+}
+.formBox > input {
+  padding: 3px;
+}
+
+.formBox > button {
+  padding: 4px;
+  color: white;
+  font-weight: 500;
+  background-color: var(--logo-green);
+  cursor: pointer;
+}
+
+#passwordErrorMsg {
+  position: relative;
+  color: red;
+  margin: 0;
+  font-size: 10;
+  height: 0;
+  transition: height 0.4s;
+  overflow: hidden;
+}
+
+#loginPage {
+//  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--stone-blue);
+}
+
+#activityPage {
+  background-color: #fff6c1;
 }
 
 .page {
@@ -31,6 +113,7 @@
   flex-flow: row wrap;
   justify-content: flex-start;
   align-items: flex-start;
+  transition: opacity 0.5s;
 }
 
 .transparent {
@@ -38,6 +121,9 @@
 }
 .display {
   display: flex !important;
+}
+.pHeight {
+  height: 1.5em !important;
 }
 
 .card {
@@ -54,10 +140,24 @@
 }
   </style>
   <body>
-    <div id="app"></div>
 
-    <div class="page" id="loginPage"></div>
-    <div class="page" id="introPage">
+    <div class="page currentPage display" id="loginPage">
+
+<div class="signInBox">
+  <img src="./res/icon.webp">
+  <h1>Sign in to EdgeUSim</h1>
+  <div class="formBox">
+    <label>Username</label>
+<!--label??^-->
+    <input>
+    <label for="passwordIn">Password</label>
+    <input id="passwordIn" type="password">
+	<p id="passwordErrorMsg" class="transparen">Sorry, wrong password</p>
+    <button onclick="signIn()">Sign In</button>
+  </div>
+</div>
+</div>
+    <div class="page" id="activityPage">
 <!--
 Contains Cards:
   + Learn/Explore
@@ -72,21 +172,23 @@ Contains Cards:
     <div class="page" id="Page"></div>
     <div class="page" id="Page"></div>
 
+
 <script>
+const e = React.createElement;
+let userType = "student";
 const introCards = {
   "commercialUser": ["Explore", "Simulator", "Mini Projects", "Environments"],
   "student": ["Explore", "Simulator", "Mini Projects", "Environments"],
   "teacher": ["Explore", "Teaching Material", "Simulator", "Mini Projects", "Environments"]
 };
+const components = {};
 
-let userType = "student";
-
-const e = React.createElement;
+let cheese = false;
 
 class card extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {apple: false};
+    this.state = {apple: cheese};
   }
   componentDidMount() {
 //    this.int = setInterval(() => this.tick(), 1000);
@@ -95,7 +197,7 @@ class card extends React.Component {
     clearInterval(this.int);
   }
   tick() {
-    this.setState((state, props) => ({apple: !state.apple}));
+    this.setState((state, props) => ({apple: cheese}));
   }
   render() {
     return (this.state.apple && this.props.title === "Explore") ? null : e('div', {className: "card", style: { backgroundImage: `url(./res/${this.props.title.split(/\s/g).join('')}.webp)` }}, `${this.props.title} Card`);
@@ -103,28 +205,46 @@ class card extends React.Component {
 }
 
 
+
+components.login = [e('div', {key:1}, null)];
+components.activity = introCards[userType].map(ic => e(card, {title: ic, key: ic}, null));
+
+const opp = introCards[userType].map(ic => e(card, {title: ic, key: ic}, null));
 /*
 ReactDOM.render(
-  introCards[userType].map(ic => e(card, {title: ic, key: ic}, null)),
+  opp,
   document.getElementById('loginPage')
 );
 */
 
 const configureSite = () => {
   console.log('Setting Up!');
-  ReactDOM.render(components[newPageId], document.getElementById(newPageId));
-  
+//  ReactDOM.render(components.login, document.getElementById('loginPage'));
 };
 
 const page = (newPageId) => {
   document.getElementsByClassName('currentPage')[0].classList.add('transparent');
-  document.getElementById(newPageId).classList.add('transparent');
+  document.getElementById(newPageId).classList.add('transparent', 'display');
   setTimeout(() => {
     ReactDOM.render(null, document.getElementsByClassName('currentPage')[0]);
-    ReactDOM.render(components[newPageId], document.getElementById(newPageId));
+    ReactDOM.render(components[newPageId.slice(0,-4)], document.getElementById(newPageId));
+    document.getElementsByClassName('currentPage')[0].classList.remove('display', 'currentPage');
+    document.getElementById(newPageId).classList.remove('transparent');
+    document.getElementById(newPageId).classList.add('currentPage');
   }, 500);
-  document.getElementsByClassName('currentPage')[0].classList.remove('display');
-  document.getElementById(newPageId).classList.replace('transparent', 'display');
+};
+
+const signIn = () => {
+  if (!verifyPassword()) {wrongPassword(); return;};
+  console.log("Password Correct");
+  page('activityPage');
+};
+
+const verifyPassword = () => {
+  return (document.getElementById('passwordIn').value === "") ? true : false;
+};
+const wrongPassword = () => {
+  document.getElementById('passwordErrorMsg').classList.add('pHeight');
 };
 
 configureSite();
