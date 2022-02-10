@@ -7,18 +7,95 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self';">
 -->
     <link rel="stylesheet" type="text/css" href="./css/index.css"/>
-    <link rel="icon" href="./res/icon.ico"/>
+    <link rel="icon" href="./res/icon.webp"/>
+    <script src="./js/react.development.js"></script>
+    <script src="./js/react-dom.development.js"></script>
   </head>
   <style>
+.page {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
 
+.card {
+  position: relative;
+  width: 250px;
+  height: 150px;
+  margin: 25px;
+  border: 3px solid gold;
+  border-radius: 15px;
+  transition: 0.4s;
+}
+.card:hover {
+  cursor: pointer;
+}
   </style>
   <body>
-    <h1>Hello, World!</h1>
-    <p>Why is this stuff always 1 commit behind?</p>
+    <div id="app"></div>
 
+    <div class="page" id="loginPage"></div>
+    <div class="page" id="introPage">
+<!--
+Contains Cards:
+  + Learn/Explore
+  + Code/Simulate
+  + Mini Projects
+  + Enviroments
+  + Logout
+-->
+    </div>
+    <div class="page" id="Page"></div>
+    <div class="page" id="Page"></div>
+    <div class="page" id="Page"></div>
+    <div class="page" id="Page"></div>
 
 <script>
+const introCards = {
+  "student": {"Explore", "Simulator", "Mini Projects", "Environments"},
+  "teacher": {"Explore", "Simulator", "Mini Projects", "Environments"}
+};
 
+const e = React.createElement;
+
+class card extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {apple: false};
+  }
+  componentDidMount() {
+//    this.int = setInterval(() => this.tick(), 1000);
+  }
+  componentWillUnmount() {
+console.log(`UNMOUNTED!!`);
+    clearInterval(this.int);
+  }
+  tick() {
+    this.setState((state, props) => ({apple: !state.apple}));
+  }
+  render() {
+    return (this.state.apple && this.props.title === "Explore") ? null : e('div', {className: "card", style: { backgroundImage: `url(./res/${this.props.title.split(/\s/g).join('')}.webp)` }}, `${this.props.title} Card`);
+  }
+}
+
+ReactDOM.render(
+  introCards[userType].map(ic => e(card, {title: ic, key: ic}, null)),
+  document.getElementById('loginPage')
+);
+
+const page = (newPageId) => {
+  setTimeout(() => {
+    ReactDOM.render(null, document.getElementsByClassName('currentPage')[0]);
+    ReactDOM.render(components[newPageId], document.getElementById(newPageId)); 
+  }, 1000);
+};
 </script>
+
   </body>
 </html>
