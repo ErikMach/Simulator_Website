@@ -12,16 +12,32 @@
     <script src="./js/react-dom.development.js"></script>
   </head>
   <style>
+#loginPage {
+  display: flex;
+  background-color: pink;
+}
+
+#introPage {
+  background-color: blue;
+}
+
 .page {
   position: relative;
   width: 100vw;
   height: 100vh;
   top: 0;
   left: 0;
-  display: flex;
+  display: none;
   flex-flow: row wrap;
   justify-content: flex-start;
   align-items: flex-start;
+}
+
+.transparent {
+  opacity: 0 !important;
+}
+.display {
+  display: flex !important;
 }
 
 .card {
@@ -86,17 +102,32 @@ class card extends React.Component {
   }
 }
 
+
+/*
 ReactDOM.render(
   introCards[userType].map(ic => e(card, {title: ic, key: ic}, null)),
   document.getElementById('loginPage')
 );
+*/
+
+const configureSite = () => {
+  console.log('Setting Up!');
+  ReactDOM.render(components[newPageId], document.getElementById(newPageId));
+  
+};
 
 const page = (newPageId) => {
+  document.getElementsByClassName('currentPage')[0].classList.add('transparent');
+  document.getElementById(newPageId).classList.add('transparent');
   setTimeout(() => {
     ReactDOM.render(null, document.getElementsByClassName('currentPage')[0]);
-    ReactDOM.render(components[newPageId], document.getElementById(newPageId)); 
-  }, 1000);
+    ReactDOM.render(components[newPageId], document.getElementById(newPageId));
+  }, 500);
+  document.getElementsByClassName('currentPage')[0].classList.remove('display');
+  document.getElementById(newPageId).classList.replace('transparent', 'display');
 };
+
+configureSite();
 </script>
 
   </body>
