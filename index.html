@@ -8,7 +8,7 @@
 -->
     <link rel="stylesheet" type="text/css" href="./css/index.css"/>
     <link rel="icon" href="./res/icon.webp"/>
-    <linl rel="prefetch" href="./res/icon.webp"/>
+    <link rel="prefetch" href="./res/icon.webp"/>
     <script src="./js/react.development.js"></script>
     <script src="./js/react-dom.development.js"></script>
   </head>
@@ -23,6 +23,7 @@
   --color-border-muted: #d8dee4;
   --logo-green: #7fbe42;
   --stone-blue: #68829f;
+  --blanched-almond: #fff0d9;
 }
 
 * {
@@ -30,6 +31,7 @@
   line-height: 1.5;
   font-size: 24px;
   font-weight: 400;
+  user-select: none;
 }
 
 body {
@@ -94,7 +96,6 @@ body {
 }
 
 #loginPage {
-//  display: flex;
   justify-content: center;
   align-items: center;
   background-color: var(--stone-blue);
@@ -130,59 +131,54 @@ body {
 .card {
   position: relative;
   width: 250px;
-  height: 150px;
+  height: 180px;
+  top: 0;
   margin: 25px;
+  background-color: var(--blanched-almond);
   border: 3px solid gold;
-  border-radius: 15px;
+  border-radius: 25px;
+  overflow: hidden;
   transition: 0.4s;
 }
 .card:hover {
   cursor: pointer;
+  top: -5px;
+  box-shadow: 0 4px 3px var(--stone-blue);
+}
+.card:active {
+  cursor: pointer;
+  top: 0;
+  box-shadow: none;
+}
+.card > h3 {
+  position: relative;
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  padding: 15px 0;
+  text-align: center;
+  background-color: var(--color-border-muted);
 }
   </style>
   <body>
+<!-- Needs constant topBar (logout, profile, ...) -->
+    <div class="page currentPage display" id="loginPage"></div>
+    <div class="page" id="activityPage"></div>
 
-    <div class="page currentPage display" id="loginPage">
-
-<div class="signInBox">
-  <img src="./res/icon.webp">
-  <h1>Sign in to EdgeUSim</h1>
-  <div class="formBox">
-    <label>Username</label>
-<!--label??^-->
-    <input>
-    <label for="passwordIn">Password</label>
-    <input id="passwordIn" type="password">
-	<p id="passwordErrorMsg" class="transparen">Sorry, wrong password</p>
-    <button onclick="signIn()">Sign In</button>
-  </div>
-</div>
-</div>
-    <div class="page" id="activityPage">
-<!--
-Contains Cards:
-  + Learn/Explore
-  + Code/Simulate
-  + Mini Projects
-  + Enviroments
-  + Logout
--->
-    </div>
-    <div class="page" id="Page"></div>
-    <div class="page" id="Page"></div>
-    <div class="page" id="Page"></div>
-    <div class="page" id="Page"></div>
+    <div class="page" id="explorePage"></div>
+    <div class="page" id="simulatorPage"></div>
+    <div class="page" id="miniProjectsPage"></div>
+    <div class="page" id="environmentsPage"></div>
 
 
 <script>
 const e = React.createElement;
 let userType = "student";
-const introCards = {
+const activityCards = {
   "commercialUser": ["Explore", "Simulator", "Mini Projects", "Environments"],
   "student": ["Explore", "Simulator", "Mini Projects", "Environments"],
   "teacher": ["Explore", "Teaching Material", "Simulator", "Mini Projects", "Environments"]
 };
-const components = {};
 
 let cheese = false;
 
@@ -201,29 +197,43 @@ class card extends React.Component {
     this.setState((state, props) => ({apple: cheese}));
   }
   render() {
-    return (this.state.apple && this.props.title === "Explore") ? null : e('div', {className: "card", style: { backgroundImage: `url(./res/${this.props.title.split(/\s/g).join('')}.webp)` }}, `${this.props.title} Card`);
+    return e('div', {id: `${this.props.title}Card`, className: "card", style: {backgroundImage: `url(./res/${this.props.title.split(/\s/g).join('')}.webp)`}, onClick: () => {page(`${pascalMaBoi(this.props.title)}Page`)}}, [
+      e('h3', {key: 10}, `${this.props.title}`)
+    ]);
   }
 }
 
+const pascalMaBoi = (str) => {
+  const arr = str.split(/\s/g);
+  arr[0] = arr[0].toLowerCase();
+  return arr.join('');
+};
 
-
-components.login = [e('div', {key:1}, null)];
-components.activity = introCards[userType].map(ic => e(card, {title: ic, key: ic}, null));
-
-const opp = introCards[userType].map(ic => e(card, {title: ic, key: ic}, null));
-/*
-ReactDOM.render(
-  opp,
-  document.getElementById('loginPage')
-);
-*/
+const components = {};
+components.login = () => {
+  return e('div', {className: "signInBox"}, [
+    e('img', {key:1, src: "./res/icon.webp"}, null),
+    e('h1', {key: 2}, "Sign in to EdgUSim"),
+    e('div', {key:3, className: "formBox"}, [
+      e('label', {key: 4}, "Username"),
+      e('input', {key: 5, placeholder: "", type: "text"}, null),
+      e('label', {key: 6, htmlFor: "passwordIn"}, "Password"),
+      e('input', {key: 7, id: "passwordIn", placeholder: "", type: "password"}, null),
+      e('p', {key: 8, id: "passwordErrorMsg"}, "Sorry, wrong password"),
+      e('button', {key: 9, onClick: signIn}, "Sign In")
+    ])
+  ]);
+};
+components.activity = activityCards[userType].map(ic => e(card, {title: ic, key: ic}, null));
+components.explore = [];
 
 const configureSite = () => {
-  console.log('Setting Up!');
-//  ReactDOM.render(components.login, document.getElementById('loginPage'));
+  console.log(components);
+  ReactDOM.render(components.login(), document.getElementById('loginPage'));
 };
 
 const page = (newPageId) => {
+console.log('Redirecting to:', newPageId);
   document.getElementsByClassName('currentPage')[0].classList.add('transparent');
   document.getElementById(newPageId).classList.add('transparent', 'display');
   setTimeout(() => {
@@ -246,6 +256,10 @@ const verifyPassword = () => {
 };
 const wrongPassword = () => {
   document.getElementById('passwordErrorMsg').classList.add('pHeight');
+};
+
+const activate = (newPageId) => {
+  page(newPageId);
 };
 
 configureSite();
