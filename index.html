@@ -181,10 +181,12 @@ const activityCards = {
   "student": ["Explore", "Simulator", "Mini Projects", "Environments"],
   "teacher": ["Explore", "Teaching Material", "Simulator", "Mini Projects", "Environments"]
 };
-
 const exploreCards = [
   "RGB LEDs","Switch","Rotary Knob","LED Display","DC Motor"
 ];
+const explore3DElements = {
+  "h1":{"tag":"h1","text":"Bananas"}//,{"tag":"p","text":""},{"tag":"button","text":"Explore"}
+};
 
 let cheese = false;
 
@@ -204,7 +206,7 @@ class card extends React.Component {
   }
   render() {
     return e('div', {id: `${this.props.title}Card`, className: "card", style: {backgroundImage: `url(./res/${this.props.title.split(/\s/g).join('')}.webp)`}, onClick: this.props.onClick}, [
-      e('h3', {key: 10}, `${this.props.title}`)
+      e('h3', {key: 10}, this.props.title)
     ]);
   }
 }
@@ -231,21 +233,20 @@ components.login = () => {
   ]);
 };
 components.activity = activityCards[userType].map((ac, i) => e(card, {key: `ac${i}`, title: ac, onClick: () => {page(`${pascalMaBoi(ac)}Page`)}}, null));
-components.explore = exploreCards.map((ec, i) => e(card, {key: `ec${i}`, title: ec, onClick: () => {initExplore(ec);page(`explore3DPage`)}}, null));
-components.explore3D = [];
+components.explore = exploreCards.map((ec, i) => e(card, {key: `ec${i}`, title: ec, onClick: () => {configureExplore(ec);page(`explore3DPage`, true)}}, null));
 
 const configureSite = () => {
   console.log(components);
   ReactDOM.render(components.login(), document.getElementById('loginPage'));
 };
 
-const page = (newPageId) => {
+const page = (newPageId, noRender) => {
 console.log('Redirecting to:', newPageId);
   document.getElementsByClassName('currentPage')[0].classList.add('transparent');
   document.getElementById(newPageId).classList.add('transparent', 'display');
   setTimeout(() => {
     ReactDOM.render(null, document.getElementsByClassName('currentPage')[0]);
-    ReactDOM.render(components[newPageId.slice(0,-4)], document.getElementById(newPageId));
+    if (!noRender) {ReactDOM.render(components[newPageId.slice(0,-4)], document.getElementById(newPageId))};
     document.getElementsByClassName('currentPage')[0].classList.remove('display', 'currentPage');
     document.getElementById(newPageId).classList.remove('transparent');
     document.getElementById(newPageId).classList.add('currentPage');
@@ -269,11 +270,43 @@ const activate = (newPageId) => {
   page(newPageId);
 };
 
+const configureExplore = (piece) => {
+console.log(piece);
+console.log(pieces[piece]);
+  ReactDOM.render(e(explore1, {name: piece}, null), document.getElementById('explore3DPage'))
+  initExplore(piece);
+};
+
 const initExplore = (piece) => {
   console.log(piece, 'will be explored here.');
 };
 
 configureSite();
+
+
+class explore1 extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+  componentDidMount() {
+  }
+  componentWillUnmount() {
+  }
+  render() {
+    return [
+      e('h1', {key: 11, className: ""}, this.props.name),
+      e('p', {key: 12, className: ""}, pieces[this.props.name].intro),
+      e('button', {key: 13, className: "", onClick: () => {}}, 'Explore')
+    ];
+  }
+}
+
+const pieces = {
+  "RGB LEDs": {
+    "intro":"A combination of a single Red, Green and Blue LED put together in a housing that allows the selection of more colours by combining each coloured light."
+  }
+};
 </script>
 
   </body>
