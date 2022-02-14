@@ -187,27 +187,39 @@ const exploreCards = [
 const explore3DElements = {
   "h1":{"tag":"h1","text":"Bananas"}//,{"tag":"p","text":""},{"tag":"button","text":"Explore"}
 };
-
-let cheese = false;
+const pieces = {
+  "RGB LEDs": {
+    "intro": "Phones, TVs, Christmas lights - coloured lights are everwhere. An RGB LED combines the primary colours of light to produce any colour imaginable!",
+    "a":"A combination of a single Red, Green and Blue LED put together in a housing that allows the selection of more colours by combining each coloured light."
+  }
+};
 
 class card extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {apple: cheese};
-  }
-  componentDidMount() {
-//    this.int = setInterval(() => this.tick(), 1000);
-  }
-  componentWillUnmount() {
-    clearInterval(this.int);
-  }
-  tick() {
-    this.setState((state, props) => ({apple: cheese}));
-  }
   render() {
     return e('div', {id: `${this.props.title}Card`, className: "card", style: {backgroundImage: `url(./res/${this.props.title.split(/\s/g).join('')}.webp)`}, onClick: this.props.onClick}, [
       e('h3', {key: 10}, this.props.title)
     ]);
+  }
+}
+
+class explore1 extends React.Component {
+  render() {
+    return [
+      e('h1', {key: 11, className: ""}, this.props.name),
+      e('p', {key: 12, className: ""}, pieces[this.props.name].intro),
+      e('button', {key: 13, className: "", onClick: () => {renderFade('explore3DPage', e(explore2, {name: this.props.name}, null))}}, 'Explore')
+    ];
+  }
+}
+
+class explore2 extends React.Component {
+  render() {
+    return [
+      e('h1', {key: 14, className: ""}, this.props.name),
+      e('p', {key: 15, className: ""}, pieces[this.props.name]["a"]),
+      e('button', {key: 16, className: "", onClick: () => {renderFade('explore3DPage', e(explore1, {name: this.props.name}, null))}}, 'Back'),
+      e('button', {key: 17, className: "", onClick: () => {renderFade('explore3DPage', e(explore1, {name: this.props.name}, null))}}, 'Next')
+    ];
   }
 }
 
@@ -236,7 +248,6 @@ components.activity = activityCards[userType].map((ac, i) => e(card, {key: `ac${
 components.explore = exploreCards.map((ec, i) => e(card, {key: `ec${i}`, title: ec, onClick: () => {configureExplore(ec);page(`explore3DPage`, true)}}, null));
 
 const configureSite = () => {
-  console.log(components);
   ReactDOM.render(components.login(), document.getElementById('loginPage'));
 };
 
@@ -250,6 +261,16 @@ console.log('Redirecting to:', newPageId);
     document.getElementsByClassName('currentPage')[0].classList.remove('display', 'currentPage');
     document.getElementById(newPageId).classList.remove('transparent');
     document.getElementById(newPageId).classList.add('currentPage');
+  }, 500);
+};
+
+const renderFade = (pageId, newElems) => {
+  const currentPage = document.getElementById(pageId);
+  currentPage.classList.add('transparent');
+  setTimeout(() => {
+    ReactDOM.render(null, currentPage);
+    ReactDOM.render(newElems, currentPage);
+    currentPage.classList.remove('transparent');
   }, 500);
 };
 
@@ -271,9 +292,7 @@ const activate = (newPageId) => {
 };
 
 const configureExplore = (piece) => {
-console.log(piece);
-console.log(pieces[piece]);
-  ReactDOM.render(e(explore1, {name: piece}, null), document.getElementById('explore3DPage'))
+  ReactDOM.render(e(explore1, {name: piece}, null), document.getElementById('explore3DPage'));
   initExplore(piece);
 };
 
@@ -282,31 +301,6 @@ const initExplore = (piece) => {
 };
 
 configureSite();
-
-
-class explore1 extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-  componentDidMount() {
-  }
-  componentWillUnmount() {
-  }
-  render() {
-    return [
-      e('h1', {key: 11, className: ""}, this.props.name),
-      e('p', {key: 12, className: ""}, pieces[this.props.name].intro),
-      e('button', {key: 13, className: "", onClick: () => {}}, 'Explore')
-    ];
-  }
-}
-
-const pieces = {
-  "RGB LEDs": {
-    "intro":"A combination of a single Red, Green and Blue LED put together in a housing that allows the selection of more colours by combining each coloured light."
-  }
-};
 </script>
 
   </body>
