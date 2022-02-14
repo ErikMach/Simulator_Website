@@ -180,6 +180,10 @@ const activityCards = {
   "teacher": ["Explore", "Teaching Material", "Simulator", "Mini Projects", "Environments"]
 };
 
+const exploreCards = [
+  "RGB LEDs","Switch","Rotary Knob","LED Display","DC Motor"
+];
+
 let cheese = false;
 
 class card extends React.Component {
@@ -224,8 +228,8 @@ components.login = () => {
     ])
   ]);
 };
-components.activity = activityCards[userType].map(ic => e(card, {title: ic, key: ic}, null));
-components.explore = [];
+components.activity = activityCards[userType].map((ac, i) => e(card, {title: ac, key: `ac${i}`}, null));
+components.explore = exploreCards.map((ec, i) => e(card, {title: ec, key: `ec${i}`}, null));
 
 const configureSite = () => {
   console.log(components);
