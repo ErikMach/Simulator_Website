@@ -170,6 +170,8 @@ body {
     <div class="page" id="miniProjectsPage"></div>
     <div class="page" id="environmentsPage"></div>
 
+    <div class="page" id="explore3DPage"></div>
+
 
 <script>
 const e = React.createElement;
@@ -201,7 +203,7 @@ class card extends React.Component {
     this.setState((state, props) => ({apple: cheese}));
   }
   render() {
-    return e('div', {id: `${this.props.title}Card`, className: "card", style: {backgroundImage: `url(./res/${this.props.title.split(/\s/g).join('')}.webp)`}, onClick: () => {page(`${pascalMaBoi(this.props.title)}Page`)}}, [
+    return e('div', {id: `${this.props.title}Card`, className: "card", style: {backgroundImage: `url(./res/${this.props.title.split(/\s/g).join('')}.webp)`}, onClick: this.props.onClick}, [
       e('h3', {key: 10}, `${this.props.title}`)
     ]);
   }
@@ -228,8 +230,9 @@ components.login = () => {
     ])
   ]);
 };
-components.activity = activityCards[userType].map((ac, i) => e(card, {title: ac, key: `ac${i}`}, null));
-components.explore = exploreCards.map((ec, i) => e(card, {title: ec, key: `ec${i}`}, null));
+components.activity = activityCards[userType].map((ac, i) => e(card, {key: `ac${i}`, title: ac, onClick: () => {page(`${pascalMaBoi(ac)}Page`)}}, null));
+components.explore = exploreCards.map((ec, i) => e(card, {key: `ec${i}`, title: ec, onClick: () => {initExplore(ec);page(`explore3DPage`)}}, null));
+components.explore3D = [];
 
 const configureSite = () => {
   console.log(components);
@@ -264,6 +267,10 @@ const wrongPassword = () => {
 
 const activate = (newPageId) => {
   page(newPageId);
+};
+
+const initExplore = (piece) => {
+  console.log(piece, 'will be explored here.');
 };
 
 configureSite();
