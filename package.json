@@ -1,0 +1,24 @@
+{
+  "name": "simulator_website",
+  "version": "0.0.1",
+  "description": "Explore the workings of common electronic compenents. Code and simulate them.",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ErikMach/Simulator_Website.git"
+  },
+  "author": "ErikMach",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ErikMach/Simulator_Website/issues"
+  },
+  "homepage": "https://github.com/ErikMach/Simulator_Website#readme",
+  "dependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "vue": "^3.2.30"
+  }
+}
