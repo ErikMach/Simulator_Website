@@ -383,7 +383,7 @@ const loadAll = () => {
 	parts3D.userData[glbFile] = glb.scene.children[0];
       },
       function (xhr) {
-        console.log(glbFile, `loaded ${100*xhr.loaded/xhr.total}%`);
+//        console.log(glbFile, `loaded ${100*xhr.loaded/xhr.total}%`);
         if (xhr.loaded === xhr.total) { 
 	totalSize += xhr.total;
         }
@@ -418,6 +418,7 @@ camera.lookAt(0, 0, 0);
 	scene.userData.camera = camera;
 
 //ADD PIECES TO SCENE
+	scene.add(parts3D.userData[0]);
 
 //LIGHTS
 //	scene.add(new THREE.HemisphereLight( 0xffffff, 0x404040, 3 ));
@@ -469,6 +470,7 @@ camera.lookAt(0, 0, 0);
 //      cancelAnimationFrame(animationFrame);
     }, 500);
     window.addEventListener('resize', render);
+console.log(scene);
 };
 
 const updateSize = () => {
