@@ -243,11 +243,12 @@ const explore3DElements = {
 };
 const pieces = {
   "RGB LEDs": {
+    "config": ["base4x4", "top4x4", "RGB LEDs"],
     "intro": "Phones, TVs, Christmas lights - coloured lights are everwhere. An RGB LED combines the primary colours of light to produce any colour imaginable!",
     "a":"A combination of a single Red, Green and Blue LED put together in a housing that allows the selection of more colours by combining each coloured light."
   }
 };
-const parts = ["base4x4"];
+const parts = ["base4x4", "top4x4"];
 
 class card extends React.Component {
   render() {
@@ -377,7 +378,7 @@ const loadAll = () => {
   dracoLoader.setDecoderPath('./js/THREE/');
   loader.setDRACOLoader(dracoLoader);
 
-  parts.forEach(glbFile => {
+  parts.concat(Object.keys(pieces)).forEach(glbFile => {
     loader.load(`./res/GLB/${glbFile}.glb`,
       function(glb) {
 	parts3D.userData[glbFile] = glb.scene.children[0];
@@ -398,6 +399,7 @@ const loadAll = () => {
 loadAll();
 
 const initExplore = (piece) => {
+console.log(parts3D);
   console.log(piece, 'will be explored here.');
 
  //SCENE
@@ -412,13 +414,15 @@ const initExplore = (piece) => {
 
 //CAMERA
 	const camera = new THREE.PerspectiveCamera(39.6, element.offsetWidth/element.offsetHeight, 0.001, 20);
-	camera.position.set(0.2, 0.32, 0.36);
-console.log(camera);
-camera.lookAt(0, 0, 0);
+	camera.position.set(-0.02, 0.1, 0.01);
+	camera.lookAt(-0.02, 0, 0);
 	scene.userData.camera = camera;
 
 //ADD PIECES TO SCENE
-	scene.add(parts3D.userData[0]);
+	pieces[piece].config.forEach(elem => {
+console.log(elem);
+	  scene.add(parts3D.userData[elem]);
+	});
 
 //LIGHTS
 //	scene.add(new THREE.HemisphereLight( 0xffffff, 0x404040, 3 ));
@@ -448,7 +452,7 @@ camera.lookAt(0, 0, 0);
 
 //GROUND (GridHelper)
 	const gridHelper = new THREE.GridHelper( 0.4, 20 );
-	scene.add(gridHelper);
+//	scene.add(gridHelper);
 
 //RENDERER FOR ALL SCENES
     renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true, alpha: true});
@@ -464,13 +468,13 @@ camera.lookAt(0, 0, 0);
     renderer.toneMappingExposure = 1;
 
 
+
 //ACTION
     animate();
     setTimeout(() => {
 //      cancelAnimationFrame(animationFrame);
     }, 500);
     window.addEventListener('resize', render);
-console.log(scene);
 };
 
 const updateSize = () => {
@@ -495,6 +499,20 @@ const render = () => {
     if (!renderer) {cancelAnimationFrame(animationFrame);return;};
 
     renderer.clear();
+
+	// set the viewport
+	const element = scene.userData.element;
+	const rect = element.getBoundingClientRect();
+	const width = rect.right - rect.left;
+	const height = rect.bottom - rect.top;
+	const left = rect.left;
+	const bottom = renderer.domElement.clientHeight - rect.bottom;
+	const camera = scene.userData.camera;
+	camera.aspect = width / height;
+	camera.updateProjectionMatrix();
+
+	renderer.setViewport( left, bottom, width, height );
+	renderer.setScissor( left, bottom, width, height );
 
     renderer.render(scene, scene.userData.camera);
 

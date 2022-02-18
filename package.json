@@ -4,7 +4,9 @@
   "description": "Explore the workings of common electronic compenents. Code and simulate them.",
   "main": "index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm run open",
+    "open": "concurrently \"http-server -a localhost -p 8080\" \"start http://localhost:8080\""
   },
   "repository": {
     "type": "git",
@@ -20,5 +22,9 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "vue": "^3.2.30"
+  },
+  "devDependencies": {
+    "concurrently": "^7.0.0",
+    "http-server": "^14.1.0"
   }
 }
