@@ -187,11 +187,19 @@ body {
 #explore3DPage > * {
   margin: 0 0 0 40px;
 }
-.explore1P {
+.explore0P {
   width: 40%;
 }
+.explore1P {
+  position: absolute;
+  top: 0;
+  left: 20%;
+  width: 60%;
+}
+
 .exploreBtnContainer {
   position: relative;
+  top: 100px;
   width: calc(100% - 80px);
   display: flex;
   flex-flow: row nowrap;
@@ -245,7 +253,16 @@ const pieces = {
   "RGB LEDs": {
     "config": ["base4x4", "top4x4", "RGB LEDs"],
     "intro": "Phones, TVs, Christmas lights - coloured lights are everwhere. An RGB LED combines the primary colours of light to produce any colour imaginable!",
-    "a":"A combination of a single Red, Green and Blue LED put together in a housing that allows the selection of more colours by combining each coloured light."
+    "1": {
+      p:"A combination of a single Red, Green and Blue LED put together in a housing that allows the selection of more colours by combining each coloured light.",
+      "camera":{"pos":[0,0.05,0.08],"look":[0,0.02,0]}
+    },
+    "2": {
+      "p":"Yoyo Dawwwwg",
+      "camera":{"pos":[0,0.06,0.1],"look":[0,0.04,0]},
+      "anim": {"top4x4": {"pos":[0,0.06,0]}, "RGB LEDs":{"pos":[0,0.04,0],"rot":[Math.PI/2.7,0,0]}},
+      "labels":[]
+    }
   }
 };
 const parts = ["base4x4", "top4x4"];
@@ -258,12 +275,25 @@ class card extends React.Component {
   }
 }
 
-class explore1 extends React.Component {
+class explore0 extends React.Component {
   render() {
     return [
       e('h1', {key: 11, className: ""}, this.props.name),
-      e('p', {key: 12, className: "explore1P"}, pieces[this.props.name].intro),
-      e('button', {key: 13, className: "", onClick: () => {renderFade('explore3DPage', e(explore2, {name: this.props.name}, null))}}, 'Explore')
+      e('p', {key: 12, className: "explore0P"}, pieces[this.props.name].intro),
+      e('button', {key: 13, className: "", onClick: () => {renderFade('explore3DPage', e(explore1, {name: this.props.name}, null));explorePhase(this.props.name, 1)}}, 'Explore')
+    ];
+  }
+}
+
+class explore1 extends React.Component {
+  render() {
+    return [
+      e('h1', {key: 14, className: ""}, this.props.name),
+      e('p', {key: 15, className: "explore1P"}, pieces[this.props.name]["1"]["p"]),
+      e('div', {key: 18, className: "exploreBtnContainer"}, [
+	e('button', {key: 16, className: "exploreBtn exploreBackBtn", onClick: () => {renderFade('explore3DPage', e(explore0, {name: this.props.name}, null));explorePhase(this.props.name, 0)}}, 'Back'),
+	e('button', {key: 17, className: "exploreBtn exploreNextBtn", onClick: () => {renderFade('explore3DPage', e(explore2, {name: this.props.name}, null));explorePhase(this.props.name, 2)}}, 'Next')
+      ])
     ];
   }
 }
@@ -272,9 +302,9 @@ class explore2 extends React.Component {
   render() {
     return [
       e('h1', {key: 14, className: ""}, this.props.name),
-      e('p', {key: 15, className: ""}, pieces[this.props.name]["a"]),
+      e('p', {key: 15, className: "explore1P"}, pieces[this.props.name]["2"]["p"]),
       e('div', {key: 18, className: "exploreBtnContainer"}, [
-	e('button', {key: 16, className: "exploreBtn exploreBackBtn", onClick: () => {renderFade('explore3DPage', e(explore1, {name: this.props.name}, null))}}, 'Back'),
+	e('button', {key: 16, className: "exploreBtn exploreBackBtn", onClick: () => {renderFade('explore3DPage', e(explore1, {name: this.props.name}, null));explorePhase(this.props.name, 1)}}, 'Back'),
 	e('button', {key: 17, className: "exploreBtn exploreNextBtn", onClick: () => {renderFade('explore3DPage', e(explore1, {name: this.props.name}, null))}}, 'Next')
       ])
     ];
@@ -351,9 +381,138 @@ const activate = (newPageId) => {
 };
 
 const configureExplore = (piece) => {
-  ReactDOM.render(e(explore1, {name: piece}, null), document.getElementById('explore3DPage'));
+  ReactDOM.render(e(explore0, {name: piece}, null), document.getElementById('explore3DPage'));
   initExplore(piece);
 };
+const explorePhase = (piece, phaseNum) => {
+  const phaseData = pieces[piece][phaseNum];
+  const newCam = phaseData["camera"];
+  tweenCamera(newCam.pos, newCam.look);
+  if (phaseData.anim) {
+    for (x in phaseData.anim) {
+      tweenAnims(x, phaseData.anim[x]);
+    }
+  }
+};
+
+const tweenAnims = (pieceName, anims) => {
+  const delta = 50;
+  const N = findScenePiece(pieceName);
+  if (anims.pos) {
+    const diffVec = vecDiv(vecSub(anims.pos, scene.children[N].position.toArray()), delta);
+    let count = 0;
+    const tween = () => {
+      const dP = vecAdd(scene.children[N].position.toArray(), diffVec);
+      scene.children[N].position.set(dP[0], dP[1], dP[2]);
+      render();
+      count++;
+      if (count >= delta) {
+        cancelAnimationFrame(tweenFrame);
+        scene.children[N].position.set(anims.pos[0], anims.pos[1], anims.pos[2]);
+        render();
+      } else {
+        tweenFrame = requestAnimationFrame(tween);
+      };
+    }
+    let tweenFrame = requestAnimationFrame(tween);
+  };
+  if (anims.rot) {
+    const diffVec = vecDiv(vecSub(anims.rot, scene.children[N].rotation.toArray().slice(0,-1)), delta);
+    let count = 0;
+    const tween = () => {
+      const dR = vecAdd(scene.children[N].rotation.toArray().slice(0,-1), diffVec);
+      scene.children[N].rotation.fromArray(dR);
+      render();
+      count++;
+      if (count >= delta) {
+        cancelAnimationFrame(tweenFrame);
+        scene.children[N].rotation.fromArray(anims.rot);
+        render();
+      } else {
+        tweenFrame = requestAnimationFrame(tween);
+      };
+    }
+    let tweenFrame = requestAnimationFrame(tween);
+  };
+};
+
+const findScenePiece = (name) => {
+  for (let i=0; i<scene.children.length; i++) {
+    if (scene.children[i].name === name.split(/\s/g).join('_')) {
+      return i;
+    }
+  }
+};
+
+const tweenCamera = (newPos, newLookAt) => {
+  const camera = scene.userData.camera;
+  const delta = 50;
+  const diffVec = vecDiv(vecSub(newPos, camera.position.toArray()), delta);
+  const diffVec1 = vecDiv(vecSub(newLookAt, camera.userData.lookAt), delta);
+  let count = 0;
+  const tween = () => {
+    const dP = vecAdd(camera.position.toArray(), diffVec);
+    const dL = vecAdd(camera.userData.lookAt, diffVec1);
+    camera.position.set(dP[0], dP[1], dP[2]);
+    camera.lookAt(dL[0], dL[1], dL[2]);
+    camera.userData.lookAt = dL;
+    render();
+    count++;
+    if (count >= delta) {
+      cancelAnimationFrame(tweenFrame);
+      camera.position.set(newPos[0], newPos[1], newPos[2]);
+      camera.lookAt(newLookAt[0], newLookAt[1], newLookAt[2]);
+      render();
+    } else {
+      tweenFrame = requestAnimationFrame(tween);
+    };
+  }
+  let tweenFrame = requestAnimationFrame(tween);
+};
+
+const vecAdd = (vec1, vec2) => {
+  if (!checkVec(vec1) || !checkVec(vec2)) {return;};
+  if (vec1.length !== vec2.length) {
+    console.error(`Vectors are of different dimensions; they cannot be added.`, vec1, vec2);
+    return;
+  } else {
+    const newVec = [];
+    vec1.forEach((v, i) => {
+      newVec.push(v + vec2[i]);
+    });
+    return newVec;
+  }
+};
+const vecSub = (vec1, vec2) => {
+  if (!checkVec(vec1) || !checkVec(vec2)) {return;};
+  if (vec1.length !== vec2.length) {
+    console.error(`Vectors are of different dimensions; they cannot be subtracted.`, vec1, vec2);
+    return;
+  } else {
+    const newVec = [];
+    vec1.forEach((v, i) => {
+      newVec.push(v - vec2[i]);
+    });
+    return newVec;
+  }
+};
+const vecDiv = (vec, divisor) => {
+  if (!checkVec(vec)) {return;};
+  const newVec = [];
+  vec.forEach(v => {
+    newVec.push(v/divisor);
+  });
+  return newVec;
+};
+const checkVec = (vec) => {
+  if (Array.isArray(vec)) {
+    return true;
+  } else {
+    console.error(vec, `is not an array. It's a(n)`, typeof vec);
+    return false;
+  }
+};
+
 configureSite();
 </script>
 
@@ -416,11 +575,11 @@ console.log(parts3D);
 	const camera = new THREE.PerspectiveCamera(39.6, element.offsetWidth/element.offsetHeight, 0.001, 20);
 	camera.position.set(-0.02, 0.1, 0.01);
 	camera.lookAt(-0.02, 0, 0);
+	camera.userData.lookAt = [-0.02, 0, 0];
 	scene.userData.camera = camera;
 
 //ADD PIECES TO SCENE
 	pieces[piece].config.forEach(elem => {
-console.log(elem);
 	  scene.add(parts3D.userData[elem]);
 	});
 
