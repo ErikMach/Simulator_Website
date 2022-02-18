@@ -437,6 +437,7 @@ const tweenAnims = (pieceName, anims) => {
 };
 
 const findScenePiece = (name) => {
+console.log('Finding', name);
   for (let i=0; i<scene.children.length; i++) {
     if (scene.children[i].name === name.split(/\s/g).join('_')) {
       return i;
