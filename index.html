@@ -220,6 +220,39 @@ body {
 .exploreNextBtn {
 
 }
+
+#labelRenderer {
+  position: absolute;
+  top: 0;
+}
+#labelRenderer > div {
+  width: 1.8em;
+  height: 1.8em;
+  display: flex;
+  justify-content: center;
+  align-items: center;	
+  color: white;
+  text-shadow: 0 0 3px black;
+  background-image: radial-gradient(gold 0%, transparent 55%);
+  animation: glow 1s infinite alternate;
+}
+#labelRenderer > div:hover {
+  cursor: pointer;
+}
+
+@keyframes glow {
+  0% { background-image: radial-gradient(gold 0%, transparent 54%);}
+  10% {  background-image: radial-gradient(gold 0%, transparent 56%);}
+  20% {  background-image: radial-gradient(gold 0%, transparent 58%);}
+  30% {  background-image: radial-gradient(gold 0%, transparent 60%);}
+  40% {  background-image: radial-gradient(gold 0%, transparent 63%);}
+  50% {  background-image: radial-gradient(gold 0%, transparent 66%);}
+  60% {  background-image: radial-gradient(gold 0%, transparent 69%);}
+  70% {  background-image: radial-gradient(gold 0%, transparent 72%);}
+  80% {  background-image: radial-gradient(gold 0%, transparent 75%);}
+  90% {  background-image: radial-gradient(gold 0%, transparent 78%);}
+  100% {  background-image: radial-gradient(gold 0%, transparent 80%);}
+}
   </style>
   <body>
 <!-- Needs constant topBar (logout, profile, ...) -->
@@ -236,8 +269,10 @@ body {
 
 
 <script>
+//hello
 const e = React.createElement;
 let userType = "student";
+let labelRendererElem, currentElems;
 const activityCards = {
   "commercialUser": ["Explore", "Simulator", "Mini Projects", "Environments"],
   "student": ["Explore", "Simulator", "Mini Projects", "Environments"],
@@ -261,7 +296,7 @@ const pieces = {
       "p":"Let's take a look inside!",
       "camera":{"pos":[0,0.06,0.1],"look":[0,0.04,0]},
       "anim": {"top4x4": {"pos":[0,0.06,0]}, "RGB LEDs":{"pos":[0,0.04,0],"rot":[Math.PI/2.7,0,0]}},
-      "labels":[]
+      "labels":{"1":[-0.28,-1.5,0],"2":[-0.48,-0.7,0],"3":[-0.62,0.6,0]}
     }
   }
 };
@@ -306,10 +341,13 @@ class explore2 extends React.Component {
       e('div', {key: 18, className: "exploreBtnContainer"}, [
 	e('button', {key: 16, className: "exploreBtn exploreBackBtn", onClick: () => {renderFade('explore3DPage', e(explore1, {name: this.props.name}, null));explorePhase(this.props.name, 1)}}, 'Back'),
 	e('button', {key: 17, className: "exploreBtn exploreNextBtn", onClick: () => {renderFade('explore3DPage', e(explore1, {name: this.props.name}, null))}}, 'Next')
-      ])
+      ]),
+      e('div', {key: 19, id: "labelRenderer", dangerouslySetInnerHTML: { __html: labelRendererElem.innerHTML}}, null)
     ];
   }
 }
+
+console.log(e('h1', {key: 100, className: ""}, null));
 
 const pascalMaBoi = (str) => {
   const arr = str.split(/\s/g);
@@ -360,6 +398,9 @@ const renderFade = (pageId, newElems) => {
     ReactDOM.render(newElems, currentPage);
     currentPage.classList.remove('transparent');
   }, 500);
+
+currentElems = newElems;
+console.log(currentElems);
 };
 
 const signIn = () => {
@@ -393,6 +434,31 @@ const explorePhase = (piece, phaseNum) => {
       tweenAnims(x, phaseData.anim[x]);
     }
   }
+  if (phaseData.labels) addLabels(piece, phaseData.labels);
+
+};
+
+const addLabels = (name, labels) => {
+  const N = findScenePiece(name);
+	    if (!scene.userData.labelRenderer) {
+	      const labelRenderer = new THREE.CSS2DRenderer();
+	      labelRenderer.domElement.id = "labelRenderer";
+//	      document.getElementById("explore3DPage").appendChild(labelRenderer.domElement);
+labelRendererElem = labelRenderer.domElement;
+	      scene.userData.labelRenderer = labelRenderer;
+console.log("appending", labelRenderer.domElement, "to", document.getElementById("explore3DPage"));
+	    }
+  for (x in labels) {
+console.log(x, "at", labels[x]);
+	    const numDiv = document.createElement('div');
+	    numDiv.className = '';
+	    numDiv.textContent = x;
+	    const numLabel = new THREE.CSS2DObject(numDiv);
+	    numLabel.position.fromArray(labels[x]);
+	    scene.children[N].add(numLabel);
+	    scene.userData.labels.push(numLabel);
+  }
+console.log(scene);
 };
 
 const tweenAnims = (pieceName, anims) => {
@@ -403,12 +469,12 @@ const tweenAnims = (pieceName, anims) => {
     let count = 0;
     const tween = () => {
       const dP = vecAdd(scene.children[N].position.toArray(), diffVec);
-      scene.children[N].position.set(dP[0], dP[1], dP[2]);
+      scene.children[N].position.fromArray(dP);
       render();
       count++;
       if (count >= delta) {
         cancelAnimationFrame(tweenFrame);
-        scene.children[N].position.set(anims.pos[0], anims.pos[1], anims.pos[2]);
+        scene.children[N].position.fromArray(anims.pos);
         render();
       } else {
         tweenFrame = requestAnimationFrame(tween);
@@ -437,7 +503,6 @@ const tweenAnims = (pieceName, anims) => {
 };
 
 const findScenePiece = (name) => {
-console.log('Finding', name);
   for (let i=0; i<scene.children.length; i++) {
     if (scene.children[i].name === name.split(/\s/g).join('_')) {
       return i;
@@ -580,6 +645,7 @@ console.log(parts3D);
 	scene.userData.camera = camera;
 
 //ADD PIECES TO SCENE
+//CLONE PIECES??
 	pieces[piece].config.forEach(elem => {
 	  scene.add(parts3D.userData[elem]);
 	});
@@ -681,6 +747,8 @@ const render = () => {
 	    scene.userData.labelRenderer.setSize(scene.userData.element.clientWidth, scene.userData.element.clientHeight);
           }
 	  scene.userData.labelRenderer.render(scene, scene.userData.camera);
+//const currentPage = document.getElementById('explore3DPage');
+//    ReactDOM.render(currentElems, currentPage);
 	}
 };
 
