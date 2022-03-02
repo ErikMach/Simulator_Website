@@ -1,3 +1,5 @@
+if ('serviceWorker' in navigator) {navigator.serviceWorker.register('/service-worker.js');};
+
 const e = React.createElement;
 let userType = "student";
 let labelRendererElem, currentElems;

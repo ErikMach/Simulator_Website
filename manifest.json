@@ -14,5 +14,6 @@
   "theme_color": "#fff4e2",
   "background_color": "#fff4e2",
   "description": "Explore and Simulate the workings of everyday hardware!",
-  "display": "fullscreen"
+  "display": "fullscreen",
+  "orientation": "landscape",
 }
