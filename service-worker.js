@@ -208,6 +208,11 @@ self.addEventListener('activate', function(event) {
 
 
 self.addEventListener('fetch', function(event) {
+
+if ( event.request.url.indexOf( '/node_modules/' ) !== -1 ) {
+        return false;
+}
+
   if (event.request.method === 'GET') {
     // Should we call event.respondWith() inside this fetch event handler?
     // This needs to be determined synchronously, which will give other fetch
