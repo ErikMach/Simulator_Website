@@ -18,11 +18,6 @@
     "url": "https://github.com/ErikMach/Simulator_Website/issues"
   },
   "homepage": "https://github.com/ErikMach/Simulator_Website#readme",
-  "dependencies": {
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "vue": "^3.2.30"
-  },
   "devDependencies": {
     "concurrently": "^7.0.0",
     "http-server": "^14.1.0"
