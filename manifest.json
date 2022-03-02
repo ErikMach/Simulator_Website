@@ -1,0 +1,17 @@
+{
+  "name": "EdgeUSim",
+  "short_name": "EdgeUSim",
+  "start_url": "index.html",
+  "scope": "./",
+  "icons": [
+    {
+      "src": "./res/icon.webp",
+      "sizes": "256x256",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#fff4e2",
+  "background_color": "#fff4e2",
+  "description": "Explore and Simulate the workings of everyday hardware!",
+  "display": "fullscreen"
+}
