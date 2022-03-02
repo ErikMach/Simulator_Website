@@ -1,0 +1,254 @@
+:root {
+  --color-canvas-subtle: #f6f8fa;
+  --color-border-muted: #d8dee4;
+  --logo-green: #7fbe42;
+  --stone-blue: #68829f;
+  --blanched-almond: #fff0d9;
+}
+
+@keyframes glow {
+  0% { background-image: radial-gradient(gold 0%, transparent 54%);}
+  10% {  background-image: radial-gradient(gold 0%, transparent 56%);}
+  20% {  background-image: radial-gradient(gold 0%, transparent 58%);}
+  30% {  background-image: radial-gradient(gold 0%, transparent 60%);}
+  40% {  background-image: radial-gradient(gold 0%, transparent 63%);}
+  50% {  background-image: radial-gradient(gold 0%, transparent 66%);}
+  60% {  background-image: radial-gradient(gold 0%, transparent 69%);}
+  70% {  background-image: radial-gradient(gold 0%, transparent 72%);}
+  80% {  background-image: radial-gradient(gold 0%, transparent 75%);}
+  90% {  background-image: radial-gradient(gold 0%, transparent 78%);}
+  100% {  background-image: radial-gradient(gold 0%, transparent 80%);}
+}
+
+* {
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+  line-height: 1.5;
+  font-size: 24px;
+  font-weight: 400;
+  user-select: none;
+}
+
+#canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.signInBox {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+  width: 340px;
+  height: 100%;
+  color: var(--color-border-muted);
+}
+
+.signInBox > img {
+  height: 150px;
+  width: auto;
+}
+
+.formBox {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-around;
+  align-items: stretch;
+  width: 340px;
+  height: 270px;
+  padding: 20px;
+  font-size: 14px;
+  border-radius: 6px;
+  background-color: var(--color-canvas-subtle);
+  border: 1px solid var(--color-border-muted);
+  box-shadow: 0 0 3px #233e5c;
+}
+.formBox > * {
+  border-radius: 6px;
+  font-size: 20px;
+  color: black;
+}
+.formBox > input {
+  padding: 3px;
+}
+
+.formBox > button {
+  padding: 4px;
+  color: white;
+  font-weight: 500;
+  background-color: var(--logo-green);
+  cursor: pointer;
+}
+
+#passwordErrorMsg {
+  position: relative;
+  color: red;
+  margin: 0;
+  font-size: 10;
+  height: 0;
+  transition: height 0.4s;
+  overflow: hidden;
+}
+
+#loginPage {
+  justify-content: center;
+  align-items: center;
+  background-color: var(--stone-blue);
+}
+
+#activityPage {
+  background-color: #fff6c1;
+}
+
+.page {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  display: none;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  transition: opacity 0.5s;
+}
+
+.transparent {
+  opacity: 0 !important;
+}
+.display {
+  display: flex !important;
+}
+.pHeight {
+  height: 1.5em !important;
+}
+
+.card {
+  position: relative;
+  width: 250px;
+  height: 180px;
+  top: 0;
+  margin: 25px;
+  background-color: var(--blanched-almond);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  border: 3px solid gold;
+  border-radius: 25px;
+  overflow: hidden;
+  transition: 0.4s;
+}
+.card:hover {
+  cursor: pointer;
+  top: -5px;
+  box-shadow: 0 4px 3px var(--stone-blue);
+}
+.card:active {
+  cursor: pointer;
+  top: 0;
+  box-shadow: none;
+}
+.card > h3 {
+  position: relative;
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  padding: 15px 0;
+  text-align: center;
+  background-color: var(--color-border-muted);
+  opacity: 0.8;
+}
+
+#explore3DPage {
+  flex-flow: column nowrap;
+  justify-content: space-around;
+}
+#explore3DPage > * {
+  margin: 0 0 0 40px;
+}
+.explore0P {
+  width: 40%;
+}
+.explore1P {
+  position: absolute;
+  top: 0;
+  left: 20%;
+  width: 60%;
+}
+
+.exploreBtnContainer {
+  position: relative;
+  top: 100px;
+  width: calc(100% - 80px);
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+}
+.exploreBtn, #explore3DPage > button {
+  position: relative;
+  padding: 5px;
+  width: 5em;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: var(--color-border-muted);
+}
+.exploreBackBtn {
+
+}
+.exploreNextBtn {
+
+}
+
+#labelRenderer {
+  position: absolute;
+  top: 0;
+}
+#labelRenderer > div {
+  width: 1.8em;
+  height: 1.8em;
+  display: flex;
+  justify-content: center;
+  align-items: center;	
+  color: white;
+  text-shadow: 0 0 3px black;
+  background-image: radial-gradient(gold 0%, transparent 55%);
+  animation: glow 1s infinite alternate;
+}
+#labelRenderer > div:hover {
+  cursor: pointer;
+}
+
+.labelInfo {
+  position: absolute;
+  top: 0;
+  left: 120px;
+  width: 10em;
+  overflow: hidden;
+  transition: 0.5s;
+  background-color: antiquewhite;
+  border-radius: 15px;
+  border: 3px solid wheat;
+  color: black;
+  text-shadow: 0 0 3px white;
+  box-shadow: 3px 3px 3px black;
+  cursor: auto;
+}
+
+.rightLabel {
+  left: calc(-10em - 30px) !important;
+}
+
+.noWidth {
+  width: 0 !important;
+}
+
+
