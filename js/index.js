@@ -1,4 +1,4 @@
-if ('serviceWorker' in navigator) {navigator.serviceWorker.register('./service-worker.js');};
+//if ('serviceWorker' in navigator) {navigator.serviceWorker.register('./service-worker.js');};
 
 const e = React.createElement;
 let userType = "student";
@@ -17,10 +17,21 @@ const explore3DElements = {
 };
 
 const zoomTag = (e) => {
+  if (document.getElementsByClassName('noWidth').length < 3) {
+   for (i=0; i<3; i++) {
+    if (!document.getElementsByClassName('labelInfo')[i].classList.contains('noWidth')) {document.getElementsByClassName('labelInfo')[i].classList.add('noWidth')};
+   }
+  };
   e.currentTarget.children[0].classList.remove('noWidth');
   const b = new THREE.Vector3();
   e.currentTarget.parent3D.getWorldPosition(b);
   tweenCamera(vecAdd(b.toArray(),[0,0,0.03]), b.toArray());
+};
+
+const unZoomTag = (e) => {
+  e.stopPropagation();
+  e.currentTarget.parentElement.classList.add('noWidth');
+  tweenCamera(pieces["RGB LEDs"]["2"].camera.pos, pieces["RGB LEDs"]["2"].camera.look);
 };
 
 const pieces = {
@@ -37,12 +48,23 @@ const pieces = {
       "anim": {"top4x4": {"pos":[0,0.06,0]}, "RGB LEDs":{"pos":[0,0.04,0],"rot":[Math.PI/2.7,0,0]}},
       "labels":[
 	{"tag":"div", "content":1, "class":"", "events":{"click": zoomTag}, "pos":[0,0,1], "children":[3]},
-	{"tag":"div", "content":2, "class":"", "events":{"click": zoomTag}, "pos":[-0.2,0,0.6], "children":[4]},
+	{"tag":"div", "content":2, "class":"", "events":{"click": zoomTag}, "pos":[0,0,0.45], "children":[4]},
 	{"tag":"div", "content":3, "class":"", "events":{"click": (e) => {zoomTag(e);}}, "pos":[-0.65,0,-0.07], "children":[5]},
 	{"tag":"div", "content":"This is where the electricity comes in", "class":"labelInfo noWidth"},
-	{"tag":"div", "content":"This small black box is called a <em>Logic Chip</em>.<br>It tells each light how bright it should be. It sorts the electrical signal and directs the correct amount of electricity to each LED.", "class":"labelInfo noWidth rightLabel"},
+	{"tag":"div", "content":"This small black box is called a <em>Logic Chip</em>.<br>It tells each light how bright to shine.<br> It sorts the electrical signal, then directs the correct amount of electricity to each LED.", "class":"labelInfo noWidth rightLabel"},
 	{"tag":"div", "content":"This single light contains 3 LEDs. Can you spot them? One Red, one Green and one Blue.<br>These are the 3 primary colors of light.", "class":"labelInfo noWidth rightLabel"}
       ]
+    },
+    "functions" : {
+      "glow": (r, g, b) => {
+        var glowMesh = new THREEx.GeometricGlowMesh(scene.children[0]);
+        scene.children[0].add(glowMesh.object3d);
+
+	var insideUniforms	= glowMesh.insideMesh.material.uniforms
+	insideUniforms.glowColor.value.set('hotpink')
+	var outsideUniforms	= glowMesh.outsideMesh.material.uniforms
+	outsideUniforms.glowColor.value.set('hotpink')
+      }
     }
   }
 };
@@ -74,7 +96,7 @@ class explore1 extends React.Component {
       e('p', {key: 15, className: "explore1P"}, pieces[this.props.name]["1"]["p"]),
       e('div', {key: 18, className: "exploreBtnContainer"}, [
 	e('button', {key: 16, className: "exploreBtn exploreBackBtn", onClick: () => {renderFade('explore3DPage', e(explore0, {name: this.props.name}, null));explorePhase(this.props.name, 0)}}, 'Back'),
-	e('button', {key: 17, className: "exploreBtn exploreNextBtn", onClick: () => {GLOW();renderFade('explore3DPage', e(explore2, {name: this.props.name}, null));explorePhase(this.props.name, 2)}}, 'Next')
+	e('button', {key: 17, className: "exploreBtn exploreNextBtn", onClick: () => {GLOW();GLOW();GLOW();GLOW();renderFade('explore3DPage', e(explore2, {name: this.props.name}, null));explorePhase(this.props.name, 2)}}, 'Next')
       ])
     ];
   }
