@@ -32,21 +32,35 @@ const createElem = (config) => {
   const elem = document.createElement(config.tag);
   elem.className = config.class;
   elem.innerHTML = config.content;
+  if (config.onClick) {elem.addEventListener('click', config.onClick);console.log(elem)};
+  if (config.class.includes('labelInfo')) {
+    elem.appendChild(createElem({tag:'div',class:'labelCloseBtn', content:'&times;', onClick: (e) => {unZoomTag(e)}}));
+  }
   return elem;
 };
 
 const GLOW = () => {
-
-  console.log(scene.children[0]);
-var glowMesh = new THREEx.GeometricGlowMesh(scene.children[0]);
-  scene.children[0].add(glowMesh.object3d);
-
-	var insideUniforms	= glowMesh.insideMesh.material.uniforms
-	insideUniforms.glowColor.value.set('hotpink')
-	var outsideUniforms	= glowMesh.outsideMesh.material.uniforms
-	outsideUniforms.glowColor.value.set('hotpink')
-
+  [[-0.52,0.14,-0.085],[-0.48,0.14,-0.085],[-0.44,0.14,-0.085]].forEach((arr, i) => {	
+	const sprite = new THREE.Sprite(
+	  new THREE.SpriteMaterial({
+	    map: new THREE.TextureLoader().load( './res/spark.png' ),
+	    useScreenCoordinates: false,
+	    color: 0xff0000,
+	    blending: THREE.CustomBlending,
+	    blendEquation: THREE.AddEquation,
+	    blendSrc: THREE.OneMinusDstAlphaFactor,
+	    blendDst: THREE.OneMinusSrcAlphaFactor
+	  }) 
+	);
+	sprite.scale.set( 0.07, 0.07, 0.1/32 ); // imageWidth, imageHeight
+	sprite.position.fromArray(arr);//set(-0.48,0.18,-0.14);
+const colorArr = [0,0,0];
+colorArr[i] = 1;
+sprite.material.color.setRGB(colorArr[0],colorArr[1],colorArr[2]);
+	scene.children[2].add(sprite);
+  });
 };
+
 
 const tweenAnims = (pieceName, anims) => {
   const delta = 50;
