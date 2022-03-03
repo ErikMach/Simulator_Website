@@ -109,7 +109,6 @@ console.log(parts3D);
     renderer.toneMappingExposure = 1;
 
 
-
 //ACTION
     animate();
     setTimeout(() => {
