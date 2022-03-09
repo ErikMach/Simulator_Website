@@ -26,6 +26,12 @@ const zoomTag = (e) => {
   const b = new THREE.Vector3();
   e.currentTarget.parent3D.getWorldPosition(b);
   tweenCamera(vecAdd(b.toArray(),[0,0,0.03]), b.toArray());
+
+  e.currentTarget.classList.add("visitedLabel");
+  if (document.getElementsByClassName("visitedLabel").length >= 3) {
+explrComp = true;
+console.log('Next!!');
+  }
 };
 
 const unZoomTag = (e) => {
@@ -89,6 +95,8 @@ class explore0 extends React.Component {
   }
 }
 
+let explrComp = false;
+
 class explore1 extends React.Component {
   render() {
     return [
@@ -96,26 +104,32 @@ class explore1 extends React.Component {
       e('p', {key: 15, className: "explore1P"}, pieces[this.props.name]["1"]["p"]),
       e('div', {key: 18, className: "exploreBtnContainer"}, [
 	e('button', {key: 16, className: "exploreBtn exploreBackBtn", onClick: () => {renderFade('explore3DPage', e(explore0, {name: this.props.name}, null));explorePhase(this.props.name, 0)}}, 'Back'),
-	e('button', {key: 17, className: "exploreBtn exploreNextBtn", onClick: () => {GLOW();GLOW();GLOW();GLOW();renderFade('explore3DPage', e(explore2, {name: this.props.name}, null));explorePhase(this.props.name, 2)}}, 'Next')
+	e('button', {key: 17, className: "exploreBtn exploreNextBtn", onClick: () => {GLOW();GLOW();GLOW();GLOW();renderFade('explore3DPage', e(explore2, {name: this.props.name, complete: explrComp}, null));explorePhase(this.props.name, 2)}}, 'Next')
       ])
     ];
   }
 }
 
 class explore2 extends React.Component {
+  constructor(props) {
+    super(props);
+    this.complete = props.complete || false;
+  }
+  shouldComponentUpdate() {
+    if (this.props.complete !== explrComp) {
+	this.props.complete = explrComp;
+console.log('updated Component');
+	return true;
+    }
+  }
+  showButtons() {
+    return (this.complete) ? [e('button', {key: 16, className: "exploreBtn exploreBackBtn", onClick: () => {renderFade('explore3DPage', e(explore1, {name: this.props.name}, null));explorePhase(this.props.name, 1)}}, 'Back'), e('button', {key: 17, className: "exploreBtn exploreNextBtn", onClick: () => {renderFade('explore3DPage', e(explore1, {name: this.props.name}, null))}}, 'Next')] : e('button', {key: 16, className: "exploreBtn exploreBackBtn", onClick: () => {renderFade('explore3DPage', e(explore1, {name: this.props.name}, null));explorePhase(this.props.name, 1)}}, 'Back');
+  }
   render() {
     return [
       e('h1', {key: 14, className: ""}, this.props.name),
       e('p', {key: 15, className: "explore1P"}, pieces[this.props.name]["2"]["p"]),
-      e('div', {key: 18, className: "exploreBtnContainer"}, [
-	e('button', {key: 16, className: "exploreBtn exploreBackBtn", onClick: () => {renderFade('explore3DPage', e(explore1, {name: this.props.name}, null));explorePhase(this.props.name, 1)}}, 'Back'),
-/*
-	e('button', {key: 17, className: "exploreBtn exploreNextBtn", onClick: () => {renderFade('explore3DPage', e(explore1, {name: this.props.name}, null))}}, 'Next')
-*/
-      ])
-/*
-      e('div', {key: 19, id: "labelRenderer", dangerouslySetInnerHTML: { __html: labelRendererElem.innerHTML}}, null)
-*/
+      e('div', {key: 18, className: "exploreBtnContainer"}, this.showButtons())
     ];
   }
 }
