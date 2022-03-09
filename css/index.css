@@ -231,7 +231,8 @@ body {
   position: absolute;
   top: 0;
   left: 120px;
-  width: 10em;
+  width: 11em;
+  padding: 0.5em;
   background-color: antiquewhite;
   border-radius: 15px;
   border: 3px solid wheat;
@@ -249,6 +250,7 @@ body {
 
 .noWidth {
   width: 0 !important;
+  padding: 0em !important;
   border: none !important;
   overflow: hidden !important;
 }
@@ -270,4 +272,6 @@ body {
     border: 3px solid antiquewhite;
   cursor: pointer;
 }
-
+.visitedLabel {
+  background-image: radial-gradient(green 0%, transparent 55%);
+}
