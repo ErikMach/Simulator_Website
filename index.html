@@ -3,11 +3,12 @@
   <head>
     <title>Simulator</title>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; worker-src blob:">
 
     <link rel="manifest" href="manifest.json">
 
     <link rel="stylesheet" type="text/css" href="./css/index.css">
+    <link rel="stylesheet" type="text/css" href="./css/colorGraph.css">
     <link rel="icon" href="./res/icon.webp">
     <link rel="prefetch" href="./res/icon.webp">
     <script src="./js/REACT/react.development.js"></script>
@@ -40,5 +41,7 @@
     <script src="./js/index.js"></script>
     <script src="./js/init.js"></script>
     <script src="./js/anim.js"></script>
+
+    <script src="./js/colorGraph.js"></script>    
   </body>
 </html>
