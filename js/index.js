@@ -1,5 +1,13 @@
 //if ('serviceWorker' in navigator) {navigator.serviceWorker.register('./service-worker.js');};
 
+// For React Element keys
+let keyCount = 0;
+
+const keyCounter = () => {
+  keyCount++;
+  return keyCount;
+};
+
 const e = React.createElement;
 let userType = "student";
 let labelRendererElem, currentElems;
@@ -29,37 +37,58 @@ const zoomTag = (e) => {
 
   e.currentTarget.classList.add("visitedLabel");
   if (document.getElementsByClassName("visitedLabel").length >= 3) {
-explrComp = true;
-console.log('Next!!');
+	explrComp = true;
+	console.log('Next!!');
   }
 };
 
 const unZoomTag = (e) => {
   e.stopPropagation();
   e.currentTarget.parentElement.classList.add('noWidth');
-  tweenCamera(pieces["RGB LEDs"]["2"].camera.pos, pieces["RGB LEDs"]["2"].camera.look);
+  tweenCamera(pieces["RGB LEDs"]["1"].camera.pos, pieces["RGB LEDs"]["1"].camera.look);
 };
+
 
 const pieces = {
   "RGB LEDs": {
     "config": ["base4x4", "top4x4", "RGB LEDs"],
-    "intro": "Phones, TVs, Christmas lights - coloured lights are everwhere. An RGB LED combines the primary colours of light to produce any colour imaginable!",
-    "1": {
-      p:"A combination of a single Red, Green and Blue LED put together in a housing that allows the selection of more colours by combining each coloured light.",
-      "camera":{"pos":[0,0.05,0.08],"look":[0,0.02,0]}
+    "0": {
+      "camera": {"pos": [-0.02, 0.1, 0.01], "look": [-0.02, 0, 0]},
+      "anim": {"top4x4": {"pos":[0,0,0]}, "RGB LEDs":{"pos":[-0.00003354529326315969, 0.006070385221391916, -0.00007747599738650024],"rot":[0,0,0]}},
+      "elems" : [
+	{children: "Phones, TVs, Christmas lights - coloured lights are everwhere. An RGB LED combines the primary colours of light to produce any colour imaginable!"},
+	{tag: "img", props: {src: "./res/img/christmas_lights.png"}},
+	{tag: "img", props: {src: "./res/img/traffic_lights.png"}},
+	{children: "A combination of a single Red, Green and Blue LED put together in a housing that allows the selection of more colours by combining each coloured light."}
+      ]
     },
-    "2": {
+    "1": {
       "p":"Let's take a look inside!",
-      "camera":{"pos":[0,0.06,0.1],"look":[0,0.04,0]},
+      "camera":{"pos":[0,0.05,0.06],"look":[0,0.04,0]},
       "anim": {"top4x4": {"pos":[0,0.06,0]}, "RGB LEDs":{"pos":[0,0.04,0],"rot":[Math.PI/2.7,0,0]}},
       "labels":[
 	{"tag":"div", "content":1, "class":"", "events":{"click": zoomTag}, "pos":[0,0,1], "children":[3]},
 	{"tag":"div", "content":2, "class":"", "events":{"click": zoomTag}, "pos":[0,0,0.45], "children":[4]},
 	{"tag":"div", "content":3, "class":"", "events":{"click": (e) => {zoomTag(e);}}, "pos":[-0.65,0,-0.07], "children":[5]},
 	{"tag":"div", "content":"This is where the electricity comes in", "class":"labelInfo noWidth"},
-	{"tag":"div", "content":"This small black box is called a <em>Logic Chip</em>.<br>It tells each light how bright to shine.<br> It sorts the electrical signal, then directs the correct amount of electricity to each LED.", "class":"labelInfo noWidth rightLabel"},
+	{"tag":"div", "content":"This small black box is a <em>Logic Chip</em>.<br>It tells each light how bright to shine.<br> It sorts the electrical signal, then directs the correct amount of electricity to each LED.", "class":"labelInfo noWidth rightLabel"},
 	{"tag":"div", "content":"This single light contains 3 LEDs. Can you spot them? One Red, one Green and one Blue.<br>These are the 3 primary colors of light.", "class":"labelInfo noWidth rightLabel"}
       ]
+    },
+    "2": {
+      "p":"Change the amounts of Red, Green, and Blue in this LED to make different colours! (Have some goals i.e.: make blue, orange, ...)",
+      "camera":{"pos":[-0.02,0.05,0.06],"look":[-0.02,0.04,0]},
+      "anim": {"top4x4": {"pos":[0,0.06,0]}, "RGB LEDs":{"pos":[0,0.04,0],"rot":[Math.PI/2.7,0,0]}}
+    },
+    "3": {
+      "p":"Now use the RGB colour chart to create the right colours.",
+      "camera":{"pos":[-0.02,0.05,0.06],"look":[-0.02,0.04,0]},
+      "anim": {"top4x4": {"pos":[0,0.06,0]}, "RGB LEDs":{"pos":[0,0.04,0],"rot":[Math.PI/2.7,0,0]}}
+    },
+    "4": {
+      "p":"Congratulations for completing the RGB LED learning module! Check out the EdgeUQeusts you've unlocked: [list them] || Return to Hardware/EdgeULab/Simulator (??)",
+      "camera": {"pos": [0, 0.1, 0.03], "look": [0, 0, 0]},
+      "anim": {"top4x4": {"pos":[0,0,0]}, "RGB LEDs":{"pos":[-0.00003354529326315969, 0.006070385221391916, -0.00007747599738650024],"rot":[0,0,0]}}
     },
     "functions" : {
       "glow": (r, g, b) => {
@@ -80,40 +109,44 @@ const parts = ["base4x4", "top4x4"];
 class card extends React.Component {
   render() {
     return e('div', {id: `${this.props.title}Card`, className: "card", style: {backgroundImage: this.props.bgImg}, onClick: this.props.onClick}, [
-      e('h3', {key: 10}, this.props.title)
+      e('h3', {key: keyCounter()}, this.props.title)
     ]);
   }
 }
 
+// INTRO
+
 class explore0 extends React.Component {
+  makeElems(elems) {
+    const rElems = [];
+    elems.forEach((el, i) => {
+      if (!el.tag) {
+	rElems.push(el.children);
+      } else {
+	el.props.key = keyCounter();
+	rElems.push(e(el.tag, el.props, el.children));
+      }
+    });
+console.log(rElems);
+    return rElems;
+  }
   render() {
     return [
-      e('h1', {key: 11, className: ""}, this.props.name),
-      e('p', {key: 12, className: "explore0P"}, pieces[this.props.name].intro),
-      e('button', {key: 13, className: "", onClick: () => {renderFade('explore3DPage', e(explore1, {name: this.props.name}, null));explorePhase(this.props.name, 1)}}, 'Explore')
+      e('h1', {key: keyCounter(), className: ""}, this.props.name),
+      e('p', {key: keyCounter(), className: "explore0P"}, this.makeElems(pieces[this.props.name]["0"].elems)),
+      e('button', {key: keyCounter(), className: "", onClick: () => {renderFade('explore3DPage', e(explore1, {name: this.props.name}, null));explorePhase(this.props.name, 1);GLOW();}}, 'Explore')
     ];
   }
 }
-
 let explrComp = false;
 
-class explore1 extends React.Component {
-  render() {
-    return [
-      e('h1', {key: 14, className: ""}, this.props.name),
-      e('p', {key: 15, className: "explore1P"}, pieces[this.props.name]["1"]["p"]),
-      e('div', {key: 18, className: "exploreBtnContainer"}, [
-	e('button', {key: 16, className: "exploreBtn exploreBackBtn", onClick: () => {renderFade('explore3DPage', e(explore0, {name: this.props.name}, null));explorePhase(this.props.name, 0)}}, 'Back'),
-	e('button', {key: 17, className: "exploreBtn exploreNextBtn", onClick: () => {GLOW();GLOW();GLOW();GLOW();renderFade('explore3DPage', e(explore2, {name: this.props.name, complete: explrComp}, null));explorePhase(this.props.name, 2)}}, 'Next')
-      ])
-    ];
-  }
-}
 
-class explore2 extends React.Component {
+// INSIDE (1),(2),(3)
+
+class explore1 extends React.Component {
   constructor(props) {
     super(props);
-    this.complete = props.complete || false;
+    this.complete = props.complete || true;
   }
   shouldComponentUpdate() {
     if (this.props.complete !== explrComp) {
@@ -123,18 +156,64 @@ console.log('updated Component');
     }
   }
   showButtons() {
-    return (this.complete) ? [e('button', {key: 16, className: "exploreBtn exploreBackBtn", onClick: () => {renderFade('explore3DPage', e(explore1, {name: this.props.name}, null));explorePhase(this.props.name, 1)}}, 'Back'), e('button', {key: 17, className: "exploreBtn exploreNextBtn", onClick: () => {renderFade('explore3DPage', e(explore1, {name: this.props.name}, null))}}, 'Next')] : e('button', {key: 16, className: "exploreBtn exploreBackBtn", onClick: () => {renderFade('explore3DPage', e(explore1, {name: this.props.name}, null));explorePhase(this.props.name, 1)}}, 'Back');
+    return (this.complete) ? [e('button', {key: keyCounter(), className: "exploreBtn exploreBackBtn", onClick: () => {renderFade('explore3DPage', e(explore1, {name: this.props.name}, null));explorePhase(this.props.name, 1)}}, 'Back'), e('button', {key: keyCounter(), className: "exploreBtn exploreNextBtn", onClick: () => {renderFade('explore3DPage', e(explore1, {name: this.props.name}, null))}}, 'Next')] : e('button', {key: keyCounter(), className: "exploreBtn exploreBackBtn", onClick: () => {renderFade('explore3DPage', e(explore1, {name: this.props.name}, null));explorePhase(this.props.name, 1)}}, 'Back');
   }
   render() {
     return [
-      e('h1', {key: 14, className: ""}, this.props.name),
-      e('p', {key: 15, className: "explore1P"}, pieces[this.props.name]["2"]["p"]),
-      e('div', {key: 18, className: "exploreBtnContainer"}, this.showButtons())
+      e('h1', {key: keyCounter(), className: ""}, this.props.name),
+      e('p', {key: keyCounter(), className: "explore1P"}, pieces[this.props.name]["1"]["p"]),
+      e('div', {key: keyCounter(), className: "exploreBtnContainer"}, [
+	e('button', {key: keyCounter(), className: "exploreBtn exploreBackBtn", onClick: () => {renderFade('explore3DPage', e(explore0, {name: this.props.name}, null));explorePhase(this.props.name, 0)}}, 'Back'),
+	e('button', {key: keyCounter(), className: "exploreBtn exploreNextBtn", onClick: () => {smallGlow();renderFade('explore3DPage', e(explore2, {name: this.props.name}, null));explorePhase(this.props.name, 2)}}, 'Next')
+      ])
     ];
   }
 }
 
-console.log(e('h1', {key: 100, className: ""}, null));
+// INTERACTIVE GRAPHICAL TESTING
+
+class explore2 extends React.Component {
+  render() {
+    return [
+      e('h1', {key: keyCounter(), className: ""}, this.props.name),
+      e('p', {key: keyCounter(), className: "explore1P"}, pieces[this.props.name]["2"]["p"]),
+createColorGraphReact(),
+      e('div', {key: keyCounter(), className: "exploreBtnContainer"}, [
+	e('button', {key: keyCounter(), className: "exploreBtn exploreBackBtn", onClick: () => {renderFade('explore3DPage', e(explore1, {name: this.props.name}, null));explorePhase(this.props.name, 1)}}, 'Back'),
+	e('button', {key: keyCounter(), className: "exploreBtn exploreNextBtn", onClick: () => {renderFade('explore3DPage', e(explore3, {name: this.props.name}, null));explorePhase(this.props.name, 3)}}, 'Next')
+      ])
+    ];
+  }
+}
+
+// CODING AND ASSESSMENT
+
+class explore3 extends React.Component {
+  render() {
+    return [
+      e('h1', {key: keyCounter(), className: ""}, this.props.name),
+      e('p', {key: keyCounter(), className: "explore1P"}, pieces[this.props.name]["3"]["p"]),
+      e('div', {key: keyCounter(), className: "exploreBtnContainer"}, [
+	e('button', {key: keyCounter(), className: "exploreBtn exploreNextBtn", onClick: () => {startAutoRot();removeSprites();renderFade('explore3DPage', e(explore4, {name: this.props.name}, null));explorePhase(this.props.name, 4)}}, 'Complete')
+      ])
+    ]
+  }
+}
+
+// COMPLETION
+
+class explore4 extends React.Component {
+  render() {
+    return [
+      e('h1', {key: keyCounter(), className: ""}, this.props.name),
+      e('p', {key: keyCounter(), className: "explore1P"}, pieces[this.props.name]["4"]["p"]),
+      e('div', {key: keyCounter(), className: "exploreBtnContainer"}, [
+	e('button', {key: keyCounter(), className: "exploreBtn exploreNextBtn", onClick: () => {cancelAutoRot();renderFade('explore3DPage', e(explore3, {name: this.props.name}, null));explorePhase(this.props.name, 3)}}, 'Return to Hardware')
+      ])
+    ]
+  }
+}
+console.log(e('h1', {key: keyCounter(), className: ""}, null));
 
 const pascalMaBoi = (str) => {
   const arr = str.split(/\s/g);
@@ -145,20 +224,24 @@ const pascalMaBoi = (str) => {
 const components = {};
 components.login = () => {
   return e('div', {className: "signInBox"}, [
-    e('img', {key:1, src: "./res/icon.webp"}, null),
-    e('h1', {key: 2}, "Sign in to EdgUSim"),
-    e('div', {key:3, className: "formBox"}, [
-      e('label', {key: 4}, "Username"),
-      e('input', {key: 5, placeholder: "", type: "text"}, null),
-      e('label', {key: 6, htmlFor: "passwordIn"}, "Password"),
-      e('input', {key: 7, id: "passwordIn", placeholder: "", type: "password"}, null),
-      e('p', {key: 8, id: "passwordErrorMsg"}, "Sorry, wrong password"),
-      e('button', {key: 9, onClick: signIn}, "Sign In")
+    e('img', {key: keyCounter(), src: "./res/icon.webp"}, null),
+    e('h1', {key: keyCounter()}, "Sign in to EdgUSim"),
+    e('div', {key: keyCounter(), className: "formBox"}, [
+      e('label', {key: keyCounter()}, "Username"),
+      e('input', {key: keyCounter(), placeholder: "", type: "text"}, null),
+      e('label', {key: keyCounter(), htmlFor: "passwordIn"}, "Password"),
+      e('input', {key: keyCounter(), id: "passwordIn", placeholder: "", type: "password"}, null),
+      e('p', {key: keyCounter(), id: "passwordErrorMsg"}, "Sorry, wrong password"),
+      e('button', {key: keyCounter(), onClick: signIn}, "Sign In")
     ])
   ]);
 };
-components.activity = activityCards[userType].map((ac, i) => e(card, {key: `ac${i}`, title: ac,  bgImg: `url(./res/img/${ac.split(/\s/g).join('')}.webp)`, onClick: () => {page(`${pascalMaBoi(ac)}Page`)}}, null));
-components.explore = exploreCards.map((ec, i) => e(card, {key: `ec${i}`, title: ec, bgImg: `url(./res/img/ComponentWebp/${ec.split(/\s/g).join('_')}.webp)`, onClick: () => {configureExplore(ec);page(`explore3DPage`, true)}}, null));
+components.activity = activityCards[userType].map((ac, i) => e(card, {key: keyCounter(), title: ac,  bgImg: `url(./res/img/${ac.split(/\s/g).join('')}.webp)`, onClick: () => {page(`${pascalMaBoi(ac)}Page`)}}, null));
+components.explore = exploreCards.map((ec, i) => e(card, {key: keyCounter(), title: ec, bgImg: `url(./res/img/ComponentWebp/${ec.split(/\s/g).join('_')}.webp)`, onClick: () => {configureExplore(ec);page(`explore3DPage`, true)}}, null));
+components.simulator = () => {
+  return e();
+};
+
 
 const configureSite = () => {
   ReactDOM.render(components.login(), document.getElementById('loginPage'));
@@ -229,7 +312,11 @@ const explorePhase = (piece, phaseNum) => {
       tweenAnims(x, phaseData.anim[x]);
     }
   }
-  if (phaseData.labels) addLabels(piece, phaseData.labels);
+  if (phaseData.labels) {
+    addLabels(piece, phaseData.labels);
+  } else {
+    removeLabels(piece);
+  };
 
 };
 
