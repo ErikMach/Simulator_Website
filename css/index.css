@@ -176,6 +176,13 @@ body {
 }
 .explore0P {
   width: 40%;
+  height: 85%;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+}
+.explore0P > img {
+  width: 50%;
 }
 .explore1P {
   position: absolute;
@@ -200,6 +207,8 @@ body {
   border-radius: 6px;
   cursor: pointer;
   background-color: var(--color-border-muted);
+
+  z-index: 1;
 }
 .exploreBackBtn {
 
@@ -211,6 +220,7 @@ body {
 #labelRenderer {
   position: absolute;
   top: 0;
+  z-index: 0;
 }
 #labelRenderer > div {
   width: 1.8em;
@@ -245,7 +255,7 @@ body {
 }
 
 .rightLabel {
-  left: calc(-10em - 30px) !important;
+  left: calc(-11em - 30px) !important;
 }
 
 .noWidth {
