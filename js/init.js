@@ -107,7 +107,7 @@ console.log(parts3D);
 
     renderer.toneMapping = THREE.LinearToneMapping;
     renderer.toneMappingExposure = 1;
-
+console.log(scene);
 
 //ACTION
     animate();
