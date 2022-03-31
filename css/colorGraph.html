@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+  <style>
+* {
+//  opacity: 0.8;
+  color: var(--inverted-color);
+}
+body {
+  background-color: black;
+}
+:root {
+  --inverted-color: white;
+  --x-box: 400px;
+  --y-box: 300px;
+  --x-axis: 300px;
+  --y-axis: 200px;
+  --y-max: calc(--y-axis - 1.5em);
+}
+.graphCont {
+  position: relative;
+  width: var(--x-box);
+  height: var(--y-box);
+  margin: calc(50vh - 150px) auto;
+  border: 3px solid gray;
+}
+/* for concision
+.graphCont > * {
+  position: absolute;
+}
+*/
+.graphTitleCont {
+  position: absolute;
+  top: 0;
+  left: calc((var(--x-box) - var(--x-axis)) / 2);
+  width: var(--x-axis);
+  height: calc((var(--y-box) - var(--y-axis)) / 2);
+  background-color: blue;
+}
+.yLabelCont {
+  position: absolute;
+  bottom: calc((var(--y-box) - var(--y-axis)) / 2);
+  left: 0;
+  width: calc((var(--x-box) - var(--x-axis)) / 2);
+  height: var(--y-axis);
+  background-color: blue;
+}
+.xLabelCont {
+  position: absolute;
+  bottom: 0;
+  left: calc((var(--x-box) - var(--x-axis)) / 2);
+  width: var(--x-axis);
+  height: calc((var(--y-box) - var(--y-axis)) / 2);
+//  background-color: blue;
+}
+svg.axes {
+  position: absolute;
+  top: calc((var(--y-box) - var(--y-axis)) / 2);
+  left: calc((var(--x-box) - var(--x-axis)) / 2);
+  width: var(--x-axis);
+  height: var(--y-axis);
+//  background-color: pink;
+}
+.graphContentCont {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-around;
+  align-items: flex-end;
+
+  position: absolute;
+  top: calc(0.5*(var(--y-box) - var(--x-axis)));
+  left: calc(0.5*(var(--x-box) - var(--y-axis)));
+  height: var(--x-axis);
+  width: var(--y-axis);
+  background-color: pink;
+
+  transform: rotate(-90deg);
+}
+.dataColumn {
+  position: relative;
+  width: calc((var(--y-box) + var(--y-axis)) / 2);
+  height: 30px;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+}
+.dataColumn > * {
+  margin: 0;
+  writing-mode: vertical-rl;
+  text-orientation: sideways;
+  text-align: center;
+}
+.dataColumn > input {
+//  position: absolute;
+//  transform: rotate(90deg);
+}
+.dataLabel {
+  position: relative;
+  height: 30px;
+  width: calc((var(--y-box) - var(--y-axis)) / 2);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+}
+.dataCont {
+  position: relative;
+  height: 100%;
+  width: var(--y-axis);
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-end;
+  align-items: center;
+}
+.dataRange, .dataValue {
+  position: relative;
+}
+  </style>
+  <body>
+    <div class="graphCont">
+      <div class="graphTitleCont"></div>
+      <div class="yLabelCont"></div>
+      <div class="xLabelCont"></div>
+      <svg class="axes">
+	<!-- Graph Axes -->
+      </svg>
+      <div class="graphContentCont">
+<!-- R -->
+	<div class="dataColumn">
+	  <div class="dataLabel">R</div>
+	  <div class="dataCont">
+	    <label class="dataValue" for="Rin">0</label>
+	    <input class="dataRange" id="Rin" type="range" min="0" max="255" value="0" oninput="changeVal(this)">
+	  </div>
+	</div>
+<!-- G -->
+	<div class="dataColumn">
+	  <div class="dataLabel">G</div>
+	  <div class="dataCont">
+	    <label class="dataValue" for="Gin">0</label>
+	    <input class="dataRange" id="Gin" type="range" min="0" max="255" value="0" oninput="changeVal(this)">
+	  </div>
+	</div>
+<!-- B -->
+	<div class="dataColumn">
+	  <div class="dataLabel">B</div>
+	  <div class="dataCont">
+	    <label class="dataValue" for="Bin">0</label>
+	    <input class="dataRange" id="Bin" type="range" min="0" max="255" value="0" oninput="changeVal(this)">
+	  </div>
+	</div>
+
+      </div>
+    </div>
+
+<script>
+// CHANGE DATA VALUES
+const changeVal = (e) => {
+  const target = e; //e.currentTarget;
+  target.labels[0].innerHTML = target.value;
+  showColor();
+};
+
+const showColor = () => {
+  const graph = document.getElementsByClassName('graphContentCont')[0];
+  const data = getColorData();
+  graph.style.backgroundColor = `rgb(${data[0]} ${data[1]} ${data[2]})`;
+  document.documentElement.style.setProperty('--inverted-color', `rgb(${255 - data[0]} ${255 - data[1]} ${255 - data[2]})`)
+};
+
+const getColorData = () => {
+  const colorData = [];
+  const ranges = document.getElementsByClassName('dataRange');
+  for (let i=0; i<ranges.length; i++) {
+    colorData.push(ranges[i].value);
+  };
+  return colorData;
+};
+</script>
+  </body>
+</html>
