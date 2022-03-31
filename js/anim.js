@@ -1,4 +1,14 @@
+const removeLabels = (name) => {
+  if (!scene.userData.labels) {return;};
+  const N = findScenePiece(name);
+  while(scene.userData.labels.length) {
+    scene.children[N].remove(scene.userData.labels[0]);
+    scene.userData.labels.shift();
+  }
+};
+
 const addLabels = (name, labels) => {
+  removeLabels(name);
   const N = findScenePiece(name);
 	    if (!scene.userData.labelRenderer) {
 	      const labelRenderer = new THREE.CSS2DRenderer();
@@ -40,6 +50,7 @@ const createElem = (config) => {
 };
 
 const GLOW = () => {
+for (let i=0; i<2; i++) {
   [[-0.52,0.14,-0.085],[-0.48,0.14,-0.085],[-0.44,0.14,-0.085]].forEach((arr, i) => {	
 	const sprite = new THREE.Sprite(
 	  new THREE.SpriteMaterial({
@@ -52,15 +63,83 @@ const GLOW = () => {
 	    blendDst: THREE.OneMinusSrcAlphaFactor
 	  }) 
 	);
+sprite.id = keyCounter();
 	sprite.scale.set( 0.07, 0.07, 0.1/32 ); // imageWidth, imageHeight
 	sprite.position.fromArray(arr);//set(-0.48,0.18,-0.14);
 const colorArr = [0,0,0];
 colorArr[i] = 1;
 sprite.material.color.setRGB(colorArr[0],colorArr[1],colorArr[2]);
 	scene.children[2].add(sprite);
+	if (!scene.children[2].userData.sprites) {scene.children[2].userData.sprites = []};
+
   });
 };
+console.log(scene.children[2].userData.sprites);
+};
 
+const removeSprites = () => {
+  for (let i=scene.children[2].children.length - 1; i>0; i--) {
+    if (scene.children[2].children[i].type === "Sprite") {
+      scene.children[2].remove(scene.children[2].children[i]);
+    }
+  };
+  scene.children[2].userData.sprites = [];
+};
+
+const smallGlow = () => {
+  removeSprites();
+  for (let i=0; i<2; i++ ) {
+	const sprite = new THREE.Sprite(
+	  new THREE.SpriteMaterial({
+	    map: new THREE.TextureLoader().load('./res/spark.png'),
+	    useScreenCoordinates: false,
+	    color: 0xff0000,
+	    blending: THREE.CustomBlending,
+	    blendEquation: THREE.AddEquation,
+	    blendSrc: THREE.OneMinusDstAlphaFactor,
+	    blendDst: THREE.OneMinusSrcAlphaFactor
+	  }) 
+	);
+	sprite.scale.set( 1, 1, 5/(32*3.5) ); // imageWidth, imageHeight
+	sprite.position.set(-0.50,0.18,-0.14);
+	sprite.material.color.setRGB(0,0,0);
+	scene.children[2].add(sprite);
+	scene.children[2].userData.sprites.push(sprite);
+  }
+};
+
+let autoRotFrame, timeCheckFrame;
+let tick;
+let dt = 15; // milliseconds for 100fps
+let msPerRot = 60000;
+let ticks;
+
+const autoRot = () => {
+// for 5s/rot @ 100 ticks/s: 0.01 s/ticks => 500 ticks/5s => 500 ticks/rot
+// rot = 2PI rad. 500 ticks/ 2PI rad = 500/2PI ticks/rad => 2PI/500 rad/ticks => trig(2*Math.PI*dt*ticks/(milliSecondsPerRot = 5))
+  scene.userData.camera.position.x = - 0.03 * Math.sin(ticks*dt*2*Math.PI/msPerRot);
+  scene.userData.camera.position.z = 0.03 * Math.cos(ticks*dt*2*Math.PI/msPerRot);
+  scene.userData.camera.lookAt(0,0,0);
+};
+
+const startAutoRot = () => {
+  tick = Date.now();
+  ticks = 0;
+  const timeCheck = () => {
+    if (Date.now() - tick - dt) {
+      tick = Date.now();
+      ticks++;
+      autoRotFrame = requestAnimationFrame(autoRot);
+    }
+    timeCheckFrame = requestAnimationFrame(timeCheck);
+  }
+  setTimeout(timeCheck, 800);
+};
+
+const cancelAutoRot = () => {
+  cancelAnimationFrame(timeCheckFrame);
+  cancelAnimationFrame(autoRotFrame);
+};
 
 const tweenAnims = (pieceName, anims) => {
   const delta = 50;
