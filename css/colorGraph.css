@@ -1,0 +1,100 @@
+:root {
+  --inverted-color: black;
+  --x-box: 400px;
+  --y-box: 300px;
+  --x-axis: 300px;
+  --y-axis: 200px;
+  --y-max: calc(--y-axis - 1.5em);
+}
+.graphCont {
+
+  position: absolute;
+  top: 28vh;
+  z-index: 2;
+
+  width: var(--x-box);
+  height: var(--y-box);
+  margin: calc(50vh - 150px) auto;
+  border: 3px solid gray;
+}
+.graphCont > * {
+  position: absolute;
+  color: var(--inverted-color);
+}
+.graphTitleCont {
+  top: 0;
+  left: calc((var(--x-box) - var(--x-axis)) / 2);
+  width: var(--x-axis);
+  height: calc((var(--y-box) - var(--y-axis)) / 2);
+}
+.yLabelCont {
+  bottom: calc((var(--y-box) - var(--y-axis)) / 2);
+  left: 0;
+  width: calc((var(--x-box) - var(--x-axis)) / 2);
+  height: var(--y-axis);
+}
+.xLabelCont {
+  bottom: 0;
+  left: calc((var(--x-box) - var(--x-axis)) / 2);
+  width: var(--x-axis);
+  height: calc((var(--y-box) - var(--y-axis)) / 2);
+}
+svg.axes {
+  top: calc((var(--y-box) - var(--y-axis)) / 2);
+  left: calc((var(--x-box) - var(--x-axis)) / 2);
+  width: var(--x-axis);
+  height: var(--y-axis);
+}
+.graphContentCont {
+  top: calc(0.5*(var(--y-box) - var(--x-axis)));
+  left: calc(0.5*(var(--x-box) - var(--y-axis)));
+  height: var(--x-axis);
+  width: var(--y-axis);
+
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-around;
+  align-items: flex-end;
+
+  transform: rotate(-90deg);
+}
+.dataColumn {
+  position: relative;
+  width: calc((var(--y-box) + var(--y-axis)) / 2);
+  height: 30px;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+}
+.dataColumn > * {
+  margin: 0;
+  writing-mode: vertical-rl;
+  text-orientation: sideways;
+  text-align: center;
+}
+.dataColumn > input {
+}
+.dataLabel {
+  position: relative;
+  height: 30px;
+  width: calc((var(--y-box) - var(--y-axis)) / 2);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+}
+.dataCont {
+  position: relative;
+  height: 100%;
+  width: var(--y-axis);
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-end;
+  align-items: center;
+}
+.dataRange, .dataValue {
+  position: relative;
+}
